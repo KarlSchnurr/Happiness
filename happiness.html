@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liniendiagramm mit paralleler Linie bei y=0</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <canvas id="lineChart" width="400" height="200"></canvas>
+ 
+    <script>
+        // Funktion zur Berechnung von Datumswerten basierend auf dem Startdatum und dem Index
+        function getDate(index) {
+            var startDate = new Date('2025-04-01'); // Startdatum: 2. April 2024
+            var date = new Date(startDate);
+            date.setDate(startDate.getDate() + (index * 7)); // Füge (Index * 7) Tage hinzu
+            return date.toLocaleDateString('de-DE'); // Formatieren des Datums als "TT.MM.JJJJ"
+        }
+ 
+        // Methode zur Berechnung der Durchschnittswerte
+        function berechneDurchschnittswerte(datasets) {
+            var durchschnittsdaten = new Array(datasets[0].data.length).fill(0); // Array für Durchschnittswerte mit der Länge der Datenpunkte
+ 
+            // Summiere die Datenpunkte jeder Linie
+            datasets.forEach(dataset => {
+                dataset.data.forEach((value, index) => {
+                    durchschnittsdaten[index] += value;
+                });
+            });
+ 
+            // Berechne den Durchschnitt, indem du die Summe durch die Anzahl der Linien teilst
+            durchschnittsdaten = durchschnittsdaten.map(value => value / datasets.length);
+ 
+            return durchschnittsdaten;
+        }
+ 
+        // Datumsarray für die x-Achse
+        var dates = [];
+        for (var i = 0; i < 16; i++) {
+            dates.push(getDate(i)); // Füge das Datum für jeden Index hinzu
+        }
+ 
+        var data = {
+            labels: dates, // x-Werte von 0 bis 9 (10 Datenpunkte)
+            datasets: [{
+                label: 'Karl',
+                data: [1, 2], // y-Werte für Linie 1
+                borderColor: 'rgb(255, 99, 132)', // Rot
+                borderWidth: 2,
+                fill: false,
+                tension: 0.5
+            }, {
+                label: 'Constantin',
+                data: [1, 2], // y-Werte für Linie 1
+                borderColor: 'rgb(54, 162, 235)', // Blau
+                borderWidth: 2,
+                fill: false,
+                tension: 0.5
+            }, {
+                label: 'Michael',
+                data: [1, 2], // y-Werte für Linie 1
+                borderColor: 'rgb(0, 255, 0)', // Grün
+                borderWidth: 2,
+                fill: false,
+                tension: 0.5
+            }, {
+                label: 'Valentin',
+                data: [1,1], // y-Werte für Linie 1
+                borderColor: 'rgb(255, 145, 0)', // Orange
+                borderWidth: 2,
+                fill: false,
+                tension: 0.5
+            }, {
+                label: 'Louis',
+                data: [1, 1], // y-Werte für Linie 1
+                borderColor: 'rgb(255, 0, 230)', // Lila
+                borderWidth: 2,
+                fill: false,
+                tension: 0.5
+            }, {
+                label: 'Nulllinie',
+                data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Datenpunkte auf der Höhe y=0 für x-Werte von 0 bis 9
+                borderColor: 'black',
+                borderWidth: 2,
+                fill: false,
+                pointRadius: 0, // Setze den Punkt-Radius auf 0, um die Punkte zu entfernen
+            }]
+        };
+ 
+        // Datenobjekt aktualisieren, um die Durchschnittslinie hinzuzufügen
+        data.datasets.push({
+            label: 'Durchschnitt',
+            data: berechneDurchschnittswerte(data.datasets),
+            borderColor: 'rgb(165, 42, 42)', // Braun
+            borderWidth: 4,
+            borderDash: [5, 5], // gestrichelte Linie
+            fill: false,
+            tension: 0.5
+        });
+ 
+        var config = {
+            type: 'line',
+            data: data,
+            options: {
+                scales: {
+                    x: {
+                        type: 'category', // Setze den Skalentyp der x-Achse auf 'category' für diskrete Werte
+                        labels: dates // Verwende das Datumsarray als Label für die x-Achse
+                    },
+                    y: {
+                        suggestedMin: -2,
+                        suggestedMax: 2,
+                        ticks: {
+                            stepSize: 1 // Setze den Abstand zwischen den Werten auf der y-Achse auf ganzzahlige Beträge
+                        }
+                    }
+                }
+            }
+        };
+ 
+        var myChart = new Chart(
+            document.getElementById('lineChart'),
+            config
+        );
+    </script>
+</body>
+</html>
