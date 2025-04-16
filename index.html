@@ -18,21 +18,25 @@
             return date.toLocaleDateString('de-DE'); // Formatieren des Datums als "TT.MM.JJJJ"
         }
  
-        // Methode zur Berechnung der Durchschnittswerte
+          // Methode zur Berechnung der Durchschnittswerte
         function berechneDurchschnittswerte(datasets) {
             var durchschnittsdaten = new Array(datasets[0].data.length).fill(0); // Array für Durchschnittswerte mit der Länge der Datenpunkte
- 
-            // Summiere die Datenpunkte jeder Linie
-            datasets.forEach(dataset => {
-                dataset.data.forEach((value, index) => {
-                    durchschnittsdaten[index] += value;
-                });
+            var validDatasetCount = 0; // Zähler für gültige Datasets (ohne Nulllinie)
+
+               // Summiere die Datenpunkte jeder Linie, außer der Nulllinie
+    datasets.forEach(dataset => {
+        if (dataset.label !== 'Nulllinie') { // Ignoriere die Nulllinie
+            validDatasetCount++;
+            dataset.data.forEach((value, index) => {
+                durchschnittsdaten[index] += value;
             });
- 
-            // Berechne den Durchschnitt, indem du die Summe durch die Anzahl der Linien teilst
-            durchschnittsdaten = durchschnittsdaten.map(value => value / datasets.length);
- 
-            return durchschnittsdaten;
+        }
+    });
+
+    // Berechne den Durchschnitt, indem du die Summe durch die Anzahl der gültigen Linien teilst
+    durchschnittsdaten = durchschnittsdaten.map(value => value / validDatasetCount);
+
+    return durchschnittsdaten;
         }
  
         // Datumsarray für die x-Achse
